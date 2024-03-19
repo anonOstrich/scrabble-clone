@@ -7,6 +7,7 @@ import NavBar from './NavBar';
 import ScoreBoard from './GameBoard/ScoreBoard';
 
 function App() {
+
   return (
     <>
       <NavBar />
@@ -20,6 +21,7 @@ function App() {
 
       </main>
       <Footer />
+
     </>
   );
 }
