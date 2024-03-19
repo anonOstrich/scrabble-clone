@@ -1,5 +1,11 @@
+import { removeFromSack } from "../features/sack/sackSlice";
+import { useAppDispatch, useAppSelector } from "../hooks/state-hooks"
+import FilledSackWidget from "./FilledSackWidget"
 
 export default function GameInformationSummary() {
+
+
+
 
     return <div className="bg-cyan-700 p-2 space-y-3">
         <h2 className="text-2xl">Game State Information</h2>
@@ -12,9 +18,25 @@ export default function GameInformationSummary() {
 }
 
 function SackPlayerSummary() {
+    const dispatch = useAppDispatch();
+    const remainingPieces = useAppSelector(state => state.sack.piecesByIds)
+    const nofPiecesInBeginning = useAppSelector(state => state.sack.nofPiecesInBeginning)
+    const nofRemainingPieces = Object.keys(remainingPieces).length
+
+    console.log('remainingPieces', nofRemainingPieces)
+
+
     return <div className="flex flex-col items-center border-2 border-black p-2">
-        <FilledSack fraction={1} />
-        <span>4 pieces remain in the sack</span>
+        <button
+            className="border-2 border-black p-2 bg-red-900"
+            onClick={() => {
+                const threeIds = Object.keys(remainingPieces).slice(0, 3)
+                dispatch(removeFromSack({
+                    idsToRemove: threeIds
+                }))
+            }}>Test button: take 3 out of the sack</button>
+        <FilledSackWidget fraction={nofRemainingPieces / nofPiecesInBeginning} />
+        <span>{nofRemainingPieces} pieces remain in the sack</span>
     </div>
 }
 
@@ -29,17 +51,3 @@ function PieceValues() {
     </div>
 }
 
-
-interface FilledSackProps {
-    fraction: number
-}
-function FilledSack({ fraction }: FilledSackProps) {
-    const legalFraction = Math.min(1, Math.max(0, fraction))
-    const percentage = Math.floor((1 - legalFraction) * 100)
-
-    return <div className="border-2 border-purple-700  w-[40px] h-[40px] rounded-b-lg border-t-0 overflow-hidden relative z-10">
-        <div className="w-[40px] h-[40px] bg-red-200 absolute transition-all" style={{
-            top: `${percentage}%`
-        }}></div>
-    </div>
-}
