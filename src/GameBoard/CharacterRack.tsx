@@ -5,13 +5,15 @@ import CharacterRackPiece from "./CharacterRackPiece"
 
 export default function CharacterRack() {
 
-    const characters = useAppSelector(state => state.rack.characters)
+    const rackPieces = useAppSelector(state => state.rack.pieces)
+    const sackPieces = useAppSelector(state => state.sack.piecesByIds)
     const dispatch = useAppDispatch()
 
 
     function handleAddToRack() {
         console.log('adding...')
-        dispatch(addToRack(['a', 'a', 's', 'i']))
+        const piecesToAdd = Object.values(sackPieces).slice(0, 4)
+        dispatch(addToRack(piecesToAdd))
     }
 
     function createRemoveHandler(index: number) {
@@ -25,8 +27,8 @@ export default function CharacterRack() {
         <>
             <button onClick={handleAddToRack} className="border-2 border-black p-2">TEST: fill rack with something</button>
             <ul className="flex flex-wrap justify-center gap-2 bg-slate-400 py-2 rounded-md shadow-sm min-h-[40px]">
-                {characters.map((character, idx) => (<li key={idx}>
-                    <CharacterRackPiece character={character} removeCharacter={createRemoveHandler(idx)} />
+                {rackPieces.map((character, idx) => (<li key={idx}>
+                    <CharacterRackPiece character={character.value ?? ''} removeCharacter={createRemoveHandler(idx)} />
                 </li>))}
             </ul>
         </>

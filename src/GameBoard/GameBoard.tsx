@@ -8,7 +8,7 @@ export default function GameBoard() {
     return (
         <section className="bg-cyan-700">
             <h2 className="text-2xl">Game Board</h2>
-            <div className="m-8">
+            <div className="m-8 flex justify-center items-center">
                 <GameGrid />
             </div>
 

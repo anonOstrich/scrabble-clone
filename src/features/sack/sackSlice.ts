@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { BoardSquarePiece } from '../../utils/types';
 import { getAllPlayingPieces } from '../../config/configs';
+import { addToRack } from '../rack/rackSlice';
 
 // Alas, Map isn't serializable and not recommended to be stored in the redux store :/
 export type SackMap = {
@@ -54,6 +55,19 @@ export const sackSlice = createSlice({
         state.piecesByIds[id] = toAdd;
       });
     },
+  },
+  // Could react to other slices here...
+  extraReducers: (builder) => {
+    builder.addCase(addToRack, (state, action) => {
+      const payload = action.payload;
+
+      console.log('also: inside sackSlice extraReducers');
+      console.log('the player wants: ', payload);
+      const wantedIds = payload.map((p) => p.id);
+      wantedIds.forEach((id) => {
+        delete state.piecesByIds[id];
+      });
+    });
   },
 });
 

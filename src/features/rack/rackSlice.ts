@@ -1,13 +1,13 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Character } from '../../utils/types';
+import { BoardSquarePiece } from '../../utils/types';
 import { MAX_RACK_SIZE } from '../../config/configs';
 
 interface RackState {
-  characters: Character[];
+  pieces: BoardSquarePiece[];
 }
 
 const initialState: RackState = {
-  characters: [],
+  pieces: [],
 };
 
 export const rackSlice = createSlice({
@@ -15,18 +15,17 @@ export const rackSlice = createSlice({
   initialState,
   reducers: {
     reset: (state) => {
-      state.characters = initialState.characters;
+      state.pieces = initialState.pieces;
     },
-    addToRack: (state, action: PayloadAction<Character[]>) => {
-      console.log('am i here forrreal?');
-      if (state.characters.length + action.payload.length > MAX_RACK_SIZE) {
+    addToRack: (state, action: PayloadAction<BoardSquarePiece[]>) => {
+      if (state.pieces.length + action.payload.length > MAX_RACK_SIZE) {
         throw new Error('Rack is already quite full');
       }
-      state.characters.push(...action.payload);
+      state.pieces.push(...action.payload);
     },
     removeFromRack: (state, action: PayloadAction<{ indices: number[] }>) => {
       const indicesToRemove = action.payload.indices;
-      state.characters = state.characters.filter((_, index) => !indicesToRemove.includes(index));
+      state.pieces = state.pieces.filter((_, index) => !indicesToRemove.includes(index));
     },
   },
 });
