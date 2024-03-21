@@ -11,10 +11,6 @@ export default function CharacterRack() {
     dispatch(fillRack());
   }
 
-  function createRemoveHandler(index: number) {
-    return () => {};
-  }
-
   return (
     <>
       <DebugButton handleClick={handleFillRack} type="danger">
@@ -24,7 +20,7 @@ export default function CharacterRack() {
       <ul className="flex flex-wrap justify-center gap-2 bg-slate-400 py-2 rounded-md shadow-sm min-h-[40px]">
         {rackPieces.map((character, idx) => (
           <li key={idx}>
-            <CharacterRackPiece character={character.value ?? ''} removeCharacter={createRemoveHandler(idx)} />
+            <CharacterRackPiece character={character.value ?? ''} />
           </li>
         ))}
       </ul>

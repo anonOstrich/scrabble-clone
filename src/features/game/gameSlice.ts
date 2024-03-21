@@ -86,15 +86,31 @@ export const gameSlice = createSlice({
       state.sack = initialSackState;
     },
     writeBoardValue: (state, action: PayloadAction<{ index: BoardIndex; value: BoardSquareValue }>) => {
+      const rack = state.rack.pieces;
+      const valueIsInRack = rack.some((piece) => piece.value === action.payload.value);
+      if (!valueIsInRack) return;
       if (action.payload.index.dimensionality === 'one') {
+        const existingValue = state.board.boardArrayOneDimensional[action.payload.index.index];
+        if (existingValue !== null) {
+          return;
+        }
+
         const index = action.payload.index.index;
         state.board.boardArrayOneDimensional[index] = action.payload.value;
         state.board.boardArray[Math.floor(index / BOARD_SIZE)][index % BOARD_SIZE] = action.payload.value;
       } else {
         const { row, col } = action.payload.index;
+        const existingValue = state.board.boardArray[row][col];
+        if (existingValue !== null) {
+          return;
+        }
+
         state.board.boardArray[row][col] = action.payload.value;
         state.board.boardArrayOneDimensional[row * BOARD_SIZE + col] = action.payload.value;
       }
+
+      const firstIdx = rack.map((e) => e.value).indexOf(action.payload.value);
+      rack.splice(firstIdx, 1);
     },
     fillRack: (state) => {
       const sack = state.sack.piecesByIds;
