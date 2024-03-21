@@ -9,13 +9,13 @@ interface DebugButtonProps {
 
 const colorsByType = {
   danger: '#77002f',
-  success: '#01ad1d',
+  success: '#006511',
   neutral: '#aa19b0',
 };
 
 const lightColorsByType = {
-  danger: '#ff086b',
-  success: '#37fe57',
+  danger: '#ae0046',
+  success: '#007213',
   neutral: '#e25de8',
 };
 
