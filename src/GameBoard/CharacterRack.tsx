@@ -22,7 +22,7 @@ export default function CharacterRack() {
 
   return (
     <>
-      <DebugButton handleClick={handleAddToRack} type="neutral">
+      <DebugButton handleClick={handleAddToRack} type="danger">
         TEST: fill rack with something
       </DebugButton>
 

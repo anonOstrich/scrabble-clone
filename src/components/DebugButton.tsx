@@ -1,15 +1,33 @@
+type ColorType = 'danger' | 'success' | 'neutral';
+
 interface DebugButtonProps {
   children: React.ReactNode;
   handleClick: () => void;
   className?: string;
-  type?: 'danger' | 'success' | 'neutral';
+  type?: ColorType;
 }
 
 const colorsByType = {
-  danger: 'bg-rose-700 hover:bg-rose-500 focus:bg-rose-500',
-  success: 'bg-green-700 hover:bg-green-500 focus:bg-green-500',
-  neutral: 'bg-blue-700 hover:bg-blue-500 focus:bg-blue-500',
+  danger: '#77002f',
+  success: '#01ad1d',
+  neutral: '#aa19b0',
 };
+
+const lightColorsByType = {
+  danger: '#ff086b',
+  success: '#37fe57',
+  neutral: '#e25de8',
+};
+
+function stripedBackground(color: ColorType) {
+  return `repeating-linear-gradient(
+      45deg,
+      ${colorsByType[color]},
+      ${colorsByType[color]} 10px,
+      ${lightColorsByType[color]} 10px,
+      ${lightColorsByType[color]} 20px
+    )`;
+}
 
 /* 
     Meant for exploring functionality from the frontend, but in the finished product the interaction might start differently than from a button press. 
@@ -17,7 +35,10 @@ const colorsByType = {
 export default function DebugButton({ children, handleClick, className, type = 'danger' }: DebugButtonProps) {
   return (
     <button
-      className={`${className} p-4 m-2 border-2 border-dashed  rounded-lg uppercase hover:scale-105 focus:scale-105 transition-transform ${colorsByType[type]}`}
+      className={`${className} text-white p-[10px] m-2 border-[2px] border-dashed  rounded-lg uppercase hover:scale-105 focus:scale-105 transition-transform ${colorsByType[type]} hover:border-[4px] hover:p-[8px]  focus:border-[4px] focus:p-[8px] hover:border-solid focus:border-solid font-bold`}
+      style={{
+        background: stripedBackground(type),
+      }}
       onClick={handleClick}
     >
       {children}
