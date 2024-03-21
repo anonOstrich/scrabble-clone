@@ -1,13 +1,8 @@
 import { configureStore } from '@reduxjs/toolkit';
-import boardReducer from './features/board/boardSlice';
-import rackReducer from './features/rack/rackSlice';
-import sackReducer from './features/sack/sackSlice';
-
+import gameReducer from './features/game/gameSlice';
 const store = configureStore({
   reducer: {
-    board: boardReducer,
-    rack: rackReducer,
-    sack: sackReducer,
+    game: gameReducer,
   },
 });
 export default store;

@@ -1,5 +1,5 @@
 import DebugButton from '../components/DebugButton';
-import { removeFromSack } from '../features/sack/sackSlice';
+import { removeFromSack } from '../features/game/gameSlice';
 import { useAppDispatch, useAppSelector } from '../hooks/state-hooks';
 import FilledSackWidget from './FilledSackWidget';
 
@@ -24,8 +24,8 @@ export default function GameInformationSummary() {
 
 function SackPlayerSummary() {
   const dispatch = useAppDispatch();
-  const remainingPieces = useAppSelector((state) => state.sack.piecesByIds);
-  const nofPiecesInBeginning = useAppSelector((state) => state.sack.nofPiecesInBeginning);
+  const remainingPieces = useAppSelector((state) => state.game.sack.piecesByIds);
+  const nofPiecesInBeginning = useAppSelector((state) => state.game.sack.nofPiecesInBeginning);
   const nofRemainingPieces = Object.keys(remainingPieces).length;
 
   return (

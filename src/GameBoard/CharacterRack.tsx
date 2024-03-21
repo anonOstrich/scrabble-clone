@@ -1,28 +1,23 @@
 import DebugButton from '../components/DebugButton';
-import { addToRack, removeFromRack } from '../features/rack/rackSlice';
+import { fillRack } from '../features/game/gameSlice';
 import { useAppDispatch, useAppSelector } from '../hooks/state-hooks';
 import CharacterRackPiece from './CharacterRackPiece';
 
 export default function CharacterRack() {
-  const rackPieces = useAppSelector((state) => state.rack.pieces);
-  const sackPieces = useAppSelector((state) => state.sack.piecesByIds);
+  const rackPieces = useAppSelector((state) => state.game.rack.pieces);
+  // const sackPieces = useAppSelector((state) => state.sack.piecesByIds);
   const dispatch = useAppDispatch();
-
-  function handleAddToRack() {
-    console.log('adding...');
-    const piecesToAdd = Object.values(sackPieces).slice(0, 4);
-    dispatch(addToRack(piecesToAdd));
+  function handleFillRack() {
+    dispatch(fillRack());
   }
 
   function createRemoveHandler(index: number) {
-    return () => {
-      dispatch(removeFromRack({ indices: [index] }));
-    };
+    return () => {};
   }
 
   return (
     <>
-      <DebugButton handleClick={handleAddToRack} type="danger">
+      <DebugButton handleClick={handleFillRack} type="danger">
         TEST: fill rack with something
       </DebugButton>
 
