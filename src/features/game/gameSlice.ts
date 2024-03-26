@@ -153,24 +153,28 @@ export const gameSlice = createSlice({
       const { pieces } = action.payload;
       const nofToReplace = pieces.length;
       const piecesByIds = state.sack.piecesByIds;
+
+      // This should not be called every time
+      const allPieceInfo = getAllPlayingPieces();
+
+      const pieceIndexesInRack = pieces.map((p) => p.id).map((id) => state.rack.pieces.map((p) => p.id).indexOf(id));
+
       if (Object.values(piecesByIds).length < pieces.length) {
         throw new Error('Not enough pieces in sack');
       }
 
-      // Remove from rack
-
-      const pieceIds = pieces.map((p) => p.id);
-      state.rack.pieces = state.rack.pieces.filter((p) => !pieceIds.includes(p.id));
-
       // Add to rack
       // SHould there be a global map to find a piece by id?
       const newPieceIds = getRandomElements(Object.keys(piecesByIds), nofToReplace);
-      const newPieces = newPieceIds.map((id) => piecesByIds[id]);
+      const newPieces = newPieceIds.map((id) => allPieceInfo.find((p) => p.id === id) as BoardSquarePiece);
 
-      state.rack.pieces.push(...newPieces);
+      for (let i = 0; i < nofToReplace; i++) {
+        const pieceToPlace = newPieces[i];
+        // Here I assign multiple things...
+        state.rack.pieces[pieceIndexesInRack[i]] = pieceToPlace;
+      }
 
       // Remove from sack
-
       newPieceIds.forEach((id) => delete piecesByIds[id]);
 
       // Add old pieces to the sack!!
