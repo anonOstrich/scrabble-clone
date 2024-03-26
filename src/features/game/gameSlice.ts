@@ -1,7 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { BoardSquarePiece, BoardSquareValue } from '../../utils/types';
+import { BoardSquarePiece, BoardSquareValue, Character } from '../../utils/types';
 import { BOARD_SIZE, getAllPlayingPieces, MAX_RACK_SIZE } from '../../config/configs';
 import { getRandomElements } from '../../utils/random';
+import { PlacementDirection } from '../../GameBoard/GameBoard';
 
 /* This is an ugly file. But actions have effect on sack, racks and board -- for now, seemed easiest to write the action handlers for a sclice that grants access to all of their states    */
 
@@ -68,13 +69,25 @@ interface GameState {
   board: BoardState;
   rack: RackState;
   sack: SackState;
+  score: number;
 }
 
 const initialState: GameState = {
   board: initialBoardState,
   rack: initialRackState,
   sack: initialSackState,
+  score: 0,
 };
+
+function fillRackHelper(state: GameState) {
+  const sack = state.sack.piecesByIds;
+  const spaceInRack = MAX_RACK_SIZE - state.rack.pieces.length;
+  const piecesToAdd = getRandomElements(Object.values(sack), spaceInRack);
+  state.rack.pieces.push(...piecesToAdd);
+  for (const piece of piecesToAdd) {
+    delete sack[piece.id];
+  }
+}
 
 export const gameSlice = createSlice({
   initialState,
@@ -85,10 +98,20 @@ export const gameSlice = createSlice({
       state.rack = initialRackState;
       state.sack = initialSackState;
     },
-    writeBoardValue: (state, action: PayloadAction<{ index: BoardIndex; value: BoardSquareValue }>) => {
+    writeBoardValue: (state, action: PayloadAction<{ index: BoardIndex; valueChar: Character }>) => {
       const rack = state.rack.pieces;
-      const valueIsInRack = rack.some((piece) => piece.value === action.payload.value);
+      const valueIsInRack = rack.some((piece) => piece.value === action.payload.valueChar);
       if (!valueIsInRack) return;
+
+      const rackPiece = rack.find((piece) => piece.value === action.payload.valueChar);
+      if (rackPiece == null) {
+        throw new Error('HUH?');
+      }
+      const val = {
+        id: rackPiece?.id,
+        value: action.payload.valueChar,
+      };
+
       if (action.payload.index.dimensionality === 'one') {
         const existingValue = state.board.boardArrayOneDimensional[action.payload.index.index];
         if (existingValue !== null) {
@@ -96,8 +119,12 @@ export const gameSlice = createSlice({
         }
 
         const index = action.payload.index.index;
-        state.board.boardArrayOneDimensional[index] = action.payload.value;
-        state.board.boardArray[Math.floor(index / BOARD_SIZE)][index % BOARD_SIZE] = action.payload.value;
+        // THIS IS THE CRUCIAL PART
+        // DO THIS!!!!!!!!!!!!!
+
+        state.board.boardArrayOneDimensional[index] = val;
+
+        state.board.boardArray[Math.floor(index / BOARD_SIZE)][index % BOARD_SIZE] = val;
       } else {
         const { row, col } = action.payload.index;
         const existingValue = state.board.boardArray[row][col];
@@ -105,12 +132,17 @@ export const gameSlice = createSlice({
           return;
         }
 
-        state.board.boardArray[row][col] = action.payload.value;
-        state.board.boardArrayOneDimensional[row * BOARD_SIZE + col] = action.payload.value;
+        state.board.boardArray[row][col] = val;
+        state.board.boardArrayOneDimensional[row * BOARD_SIZE + col] = val;
       }
 
-      const firstIdx = rack.map((e) => e.value).indexOf(action.payload.value);
-      rack.splice(firstIdx, 1);
+      const char = action.payload.valueChar;
+      if (char != null) {
+        const firstIdx = rack.map((e) => e.value).indexOf(char);
+        rack.splice(firstIdx, 1);
+      } else {
+        throw new Error('Unintended');
+      }
     },
     fillRack: (state) => {
       const sack = state.sack.piecesByIds;
@@ -182,6 +214,54 @@ export const gameSlice = createSlice({
         piecesByIds[piece.id] = piece;
       });
     },
+    attemptPlacingWord: (
+      state,
+      action: PayloadAction<{ startPosition: [number, number]; wordLength: number; direction: PlacementDirection }>,
+    ) => {
+      const board = state.board.boardArray;
+      const [startRow, startCol] = action.payload.startPosition;
+      const wordLength = action.payload.wordLength;
+
+      const wordCells = Array.from({ length: action.payload.wordLength }, (_, i) => {
+        const [row, col] =
+          action.payload.direction === 'horizontal' ? [startRow, startCol + i] : [startRow + i, startCol];
+
+        return board[row][col];
+      });
+      console.log(wordCells);
+
+      // DO SOME CHECK ON IF IT'S A VALID WORD
+
+      // SCORE THE WORD
+      state.score += wordLength;
+
+      // FILL THE RACK
+
+      // RESET THE BOARD STATE
+      fillRackHelper(state);
+    },
+    cancelPlacingWord: (
+      state,
+      action: PayloadAction<{ startPosition: [number, number]; wordLength: number; direction: PlacementDirection }>,
+    ) => {
+      console.log('in canceling!');
+      const board = state.board.boardArray;
+      const [startRow, startCol] = action.payload.startPosition;
+      const wordLength = action.payload.wordLength;
+
+      for (let i = 0; i < wordLength; i++) {
+        const [row, col] =
+          action.payload.direction === 'horizontal' ? [startRow, startCol + i] : [startRow + i, startCol];
+        const piece = board[row][col];
+        if (piece != null) {
+          state.rack.pieces.push(piece);
+        } else {
+          throw new Error("Trying to cancel a word that doesn't exist");
+        }
+
+        board[row][col] = null;
+      }
+    },
   },
   selectors: {},
 });
@@ -195,6 +275,8 @@ export const {
   removeFromRack,
   removeFromSack,
   replaceRackPieces,
+  attemptPlacingWord,
+  cancelPlacingWord,
 } = gameSlice.actions;
 
 export default gameSlice.reducer;

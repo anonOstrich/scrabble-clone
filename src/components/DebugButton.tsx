@@ -5,6 +5,7 @@ interface DebugButtonProps {
   handleClick: () => void;
   className?: string;
   type?: ColorType;
+  disabled?: boolean;
 }
 
 const colorsByType = {
@@ -32,14 +33,15 @@ function stripedBackground(color: ColorType) {
 /* 
     Meant for exploring functionality from the frontend, but in the finished product the interaction might start differently than from a button press. 
 */
-export default function DebugButton({ children, handleClick, className, type = 'danger' }: DebugButtonProps) {
+export default function DebugButton({ children, handleClick, className, disabled, type = 'danger' }: DebugButtonProps) {
   return (
     <button
-      className={`${className} text-white p-[10px] m-2 border-[2px] border-dashed  rounded-lg uppercase hover:scale-105 focus:scale-105 transition-transform ${colorsByType[type]} hover:border-[4px] hover:p-[8px]  focus:border-[4px] focus:p-[8px] hover:border-solid focus:border-solid font-bold`}
+      className={`${className} text-white p-[10px] m-2 border-[2px] border-dashed  rounded-lg uppercase hover:scale-105 focus:scale-105 transition-transform ${colorsByType[type]} hover:border-[4px] hover:p-[8px]  focus:border-[4px] focus:p-[8px] hover:border-solid focus:border-solid font-bold disabled:hidden`}
       style={{
         background: stripedBackground(type),
       }}
       onClick={handleClick}
+      disabled={disabled}
     >
       {children}
     </button>
