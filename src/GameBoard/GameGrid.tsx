@@ -7,18 +7,17 @@ import { BOARD_SIZE } from '../config/configs';
 interface GameGridInterface {
   direction: PlacementDirection;
   isDisabled: boolean;
+  setWordHasStarted: (val: boolean) => void;
 }
 
 type Coords = [number, number];
 
-export default function GameGrid({ direction, isDisabled }: GameGridInterface) {
+export default function GameGrid({ direction, isDisabled, setWordHasStarted }: GameGridInterface) {
   const boardState = useAppSelector((state) => state.game.board.boardArray);
   const [wordStart, setWordStart] = useState<Coords>([-1, -1]);
   const [wordLength, setWordLength] = useState<number>(0);
   // No need to be set up before first cell is hightlighted
   const focusEl = useRef<HTMLInputElement>(null);
-
-  console.log('current focus element: ', focusEl.current);
 
   useEffect(() => {
     if (isDisabled) {
@@ -30,7 +29,8 @@ export default function GameGrid({ direction, isDisabled }: GameGridInterface) {
 
   useEffect(() => {
     focusEl.current?.focus();
-  }, [wordLength]);
+    setWordHasStarted(wordLength !== 0);
+  }, [wordLength, setWordHasStarted]);
 
   const [startRow, startColumn] = wordStart;
 
@@ -72,6 +72,7 @@ export default function GameGrid({ direction, isDisabled }: GameGridInterface) {
               highlight={isChosen ? 'chosen' : isHighlighted ? 'preview' : 'none'}
               writeIntoCell={isHighlighted ? writeIntoCell : undefined}
               focusRef={focusEl}
+              displayedArrow={wordLength === 0 ? (isHighlighted ? direction : 'none') : 'none'}
             />
           );
         }),

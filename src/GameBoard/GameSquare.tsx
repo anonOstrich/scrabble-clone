@@ -13,6 +13,7 @@ interface GameSquareProps {
   highlight: ChosenHighlight;
   writeIntoCell?: () => void;
   focusRef: React.RefObject<HTMLInputElement>;
+  displayedArrow: 'horizontal' | 'vertical' | 'none';
 }
 
 export default function GameSquare({
@@ -23,6 +24,7 @@ export default function GameSquare({
   column,
   writeIntoCell,
   focusRef,
+  displayedArrow,
   highlight = 'none',
 }: GameSquareProps) {
   const character = useAppSelector((state) => state.game.board.boardArrayOneDimensional[index]);
@@ -74,24 +76,30 @@ export default function GameSquare({
   }
 
   return (
-    <input
-      type="text"
-      // If maxLength == 1, onChange won't trigger except for an empty input
-      maxLength={2}
-      className="overflow-hidden
-            capitalize text-2xl text-center"
-      style={{
-        // opacity filter
-        backgroundColor: backgroundColor,
-      }}
-      value={displayedCharacter}
-      onChange={handleChange}
-      disabled={isDisabled}
-      onClick={() => {
-        console.log('HERE I AM');
-        chooseAsStartingPosition(row, column);
-      }}
-      ref={highlight === 'preview' ? focusRef : null}
-    />
+    <div className="capitalize relative">
+      <input
+        type="text"
+        className="w-full h-full text-2xl text-center"
+        style={{
+          // opacity filter
+          backgroundColor: backgroundColor,
+        }}
+        // If maxLength == 1, onChange won't trigger except for an empty input
+        maxLength={2}
+        value={displayedCharacter}
+        onChange={handleChange}
+        disabled={isDisabled}
+        onClick={() => {
+          console.log('HERE I AM');
+          chooseAsStartingPosition(row, column);
+        }}
+        ref={highlight === 'preview' ? focusRef : null}
+      />
+      {displayedArrow === 'none' ? null : displayedArrow === 'horizontal' ? (
+        <div className="absolute top-[50%] translate-y-[-50%] scale-150 left-[120%] text-black text-4xl z-10">→</div>
+      ) : (
+        <div className="absolute left-[50%] top-[120%] text-black text-4xl z-10 translate-x-[-50%] scale-150">↓</div>
+      )}
+    </div>
   );
 }
