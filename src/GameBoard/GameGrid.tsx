@@ -1,18 +1,81 @@
+import { useEffect, useRef, useState } from 'react';
 import { useAppSelector } from '../hooks/state-hooks';
+import { PlacementDirection } from './GameBoard';
 import GameSquare from './GameSquare';
+import { BOARD_SIZE } from '../config/configs';
 
-export default // Stateful, smart. Controlled by parent.
-function GameSquares() {
+interface GameGridInterface {
+  direction: PlacementDirection;
+  isDisabled: boolean;
+}
+
+type Coords = [number, number];
+
+export default function GameGrid({ direction, isDisabled }: GameGridInterface) {
   const boardState = useAppSelector((state) => state.game.board.boardArray);
+  const [wordStart, setWordStart] = useState<Coords>([-1, -1]);
+  const [wordLength, setWordLength] = useState<number>(0);
+  // No need to be set up before first cell is hightlighted
+  const focusEl = useRef<HTMLInputElement>(null);
 
-  const oneDimensionalBoard = boardState.flatMap((row) => row);
-  console.log('one dimensional board: ', oneDimensionalBoard);
+  console.log('current focus element: ', focusEl.current);
+
+  useEffect(() => {
+    if (isDisabled) {
+      setWordStart([-1, -1]);
+      setWordLength(0);
+      focusEl.current?.blur();
+    }
+  }, [isDisabled]);
+
+  useEffect(() => {
+    focusEl.current?.focus();
+  }, [wordLength]);
+
+  const [startRow, startColumn] = wordStart;
+
+  const chosenCells = Array.from({ length: wordLength }, (_, index) => [startRow, startColumn + index]);
+  const highlightedCell = [startRow, startColumn + wordLength];
+  console.log('hightlighted cell: ', highlightedCell);
+
+  function writeIntoCell() {
+    setWordLength((len) => len + 1);
+  }
+
+  // const oneDimensionalBoard = boardState.flatMap((row) => row);
+  const twoDimensionalBoard = boardState;
+
+  function chooseAsStartingPosition(row: number, column: number) {
+    // For now: COMMIT to your selection, eh?
+    if (wordStart[0] == -1 && wordStart[1] == -1) {
+      setWordStart([row, column]);
+    }
+  }
 
   return (
     <div className="grid grid-cols-[repeat(15,1fr)] grid-rows-[repeat(15,1fr)] gap-1 bg-violet-700 border-[0.5rem] border-violet-700 w-[600px] h-[600px]">
-      {oneDimensionalBoard.map((_, index) => {
-        return <GameSquare key={index} index={index} />;
-      })}
+      {twoDimensionalBoard.map((row, rowIndex) =>
+        row.map((column, columnIndex) => {
+          const isChosen = chosenCells.some(
+            ([chosenRow, chosenColumn]) => chosenRow === rowIndex && chosenColumn === columnIndex,
+          );
+          const isHighlighted = highlightedCell[0] === rowIndex && highlightedCell[1] === columnIndex;
+
+          return (
+            <GameSquare
+              key={rowIndex * BOARD_SIZE + columnIndex}
+              index={rowIndex * BOARD_SIZE + columnIndex}
+              isDisabled={isDisabled}
+              column={columnIndex}
+              row={rowIndex}
+              chooseAsStartingPosition={chooseAsStartingPosition}
+              highlight={isChosen ? 'chosen' : isHighlighted ? 'preview' : 'none'}
+              writeIntoCell={isHighlighted ? writeIntoCell : undefined}
+              focusRef={focusEl}
+            />
+          );
+        }),
+      )}
     </div>
   );
 }
