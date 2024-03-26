@@ -19,11 +19,15 @@ export default function GameGrid({ direction, isDisabled, setWordHasStarted }: G
   // No need to be set up before first cell is hightlighted
   const focusEl = useRef<HTMLInputElement>(null);
 
+  function resetGrid() {
+    setWordStart([-1, -1]);
+    setWordLength(0);
+    focusEl.current?.blur();
+  }
+
   useEffect(() => {
     if (isDisabled) {
-      setWordStart([-1, -1]);
-      setWordLength(0);
-      focusEl.current?.blur();
+      resetGrid();
     }
   }, [isDisabled]);
 
@@ -34,9 +38,12 @@ export default function GameGrid({ direction, isDisabled, setWordHasStarted }: G
 
   const [startRow, startColumn] = wordStart;
 
-  const chosenCells = Array.from({ length: wordLength }, (_, index) => [startRow, startColumn + index]);
-  const highlightedCell = [startRow, startColumn + wordLength];
-  console.log('hightlighted cell: ', highlightedCell);
+  const chosenCells =
+    direction === 'horizontal'
+      ? Array.from({ length: wordLength }, (_, index) => [startRow, startColumn + index])
+      : Array.from({ length: wordLength }, (_, index) => [startRow + index, startColumn]);
+  const highlightedCell =
+    direction === 'horizontal' ? [startRow, startColumn + wordLength] : [startRow + wordLength, startColumn];
 
   function writeIntoCell() {
     setWordLength((len) => len + 1);
