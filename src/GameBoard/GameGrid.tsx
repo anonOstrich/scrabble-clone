@@ -59,7 +59,9 @@ export default function GameGrid({
     direction === 'horizontal' ? [startRow, startColumn + wordLength] : [startRow + wordLength, startColumn];
 
   function writeIntoCell() {
-    setWordLength(wordLength + 1);
+    if (cellIsOpenToModification(highlightedCell[0], highlightedCell[1])) {
+      setWordLength(wordLength + 1);
+    }
   }
 
   // const oneDimensionalBoard = boardState.flatMap((row) => row);

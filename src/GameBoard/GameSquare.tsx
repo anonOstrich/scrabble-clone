@@ -66,14 +66,14 @@ export default function GameSquare({
 
   if (!isDisabled) {
     switch (highlight) {
+      case 'none':
+        backgroundColor = character == null ? '#f6d068' : '#ae8000';
+        break;
       case 'preview':
         backgroundColor = '#659ffb';
         break;
       case 'chosen':
         backgroundColor = '#0b65f5';
-        break;
-      case 'none':
-        backgroundColor = '#f6d068';
         break;
       default:
         throw new Error('Should not be possible');
