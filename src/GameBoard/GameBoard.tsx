@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import CharacterRack from './CharacterRack';
 import GameGrid from './GameGrid';
 import WritingControls from './WritingControls';
-import { useAppDispatch } from '../hooks/state-hooks';
+import { useAppDispatch, useAppSelector } from '../hooks/state-hooks';
 import { attemptPlacingWord, cancelPlacingWord } from '../features/game/gameSlice';
+import { BoardSquareValue } from '../utils/types';
 
 export type PlacementDirection = 'horizontal' | 'vertical';
 
@@ -12,12 +13,26 @@ export type Coords = [number, number];
 export default function GameBoard() {
   const dispatch = useAppDispatch();
 
+  const board = useAppSelector((state) => state.game.board.boardArray);
+
   const [isPlacing, setIsPlacing] = useState(false);
   const [placementDirection, setPlacementDirection] = useState<PlacementDirection>('horizontal');
   const [wordHasStarted, setWordHasStarted] = useState(false);
 
   const [wordStart, setWordStart] = useState<Coords>([-1, -1]);
   const [wordLength, setWordLength] = useState<number>(0);
+  const [lockedBoard, setLockedBoard] = useState<BoardSquareValue[][] | null>(null);
+
+  function isOpenToModification(row: number, col: number) {
+    if (lockedBoard == null) return false;
+    return lockedBoard[row][col] == null;
+  }
+
+  useEffect(() => {
+    if (isPlacing) {
+      setLockedBoard([...board.map((e) => [...e])]);
+    }
+  }, [isPlacing]);
 
   function changePlacementDirection(newDirection: PlacementDirection) {
     if (!wordHasStarted) {
@@ -59,6 +74,7 @@ export default function GameBoard() {
           setWordStart={setWordStart}
           wordLength={wordLength}
           wordStart={wordStart}
+          cellIsOpenToModification={isOpenToModification}
         />
       </div>
 

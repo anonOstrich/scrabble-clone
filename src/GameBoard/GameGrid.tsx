@@ -13,6 +13,7 @@ interface GameGridInterface {
   setWordLength: (val: number) => void;
   wordStart: Coords;
   wordLength: number;
+  cellIsOpenToModification: (row: number, col: number) => boolean;
 }
 
 export default function GameGrid({
@@ -24,6 +25,7 @@ export default function GameGrid({
   setWordLength,
   wordStart,
   wordLength,
+  cellIsOpenToModification,
 }: GameGridInterface) {
   const boardState = useAppSelector((state) => state.game.board.boardArray);
 
@@ -65,7 +67,7 @@ export default function GameGrid({
 
   function chooseAsStartingPosition(row: number, column: number) {
     // For now: COMMIT to your selection, eh?
-    if (wordStart[0] == -1 && wordStart[1] == -1) {
+    if (wordStart[0] == -1 && wordStart[1] == -1 && cellIsOpenToModification(row, column)) {
       setWordStart([row, column]);
     }
   }
