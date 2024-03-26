@@ -7,6 +7,8 @@ interface WritingControlsProps {
   direction: PlacementDirection;
   setDirection: (val: PlacementDirection) => void;
   directionCanBeChanged: boolean;
+  enter: () => void;
+  cancel: () => void;
 }
 
 export default function WritingControls({
@@ -15,6 +17,8 @@ export default function WritingControls({
   setDirection,
   direction,
   directionCanBeChanged,
+  enter,
+  cancel,
 }: WritingControlsProps) {
   function handleClick() {
     setIsPlacing(!isPlacing);
@@ -25,7 +29,7 @@ export default function WritingControls({
       <h3>Writing controls</h3>
       {isPlacing ? (
         <div>
-          <DebugButton handleClick={handleClick} type="danger">
+          <DebugButton handleClick={cancel} type="danger">
             Stop Placing
           </DebugButton>
           <DebugButton
@@ -37,12 +41,7 @@ export default function WritingControls({
           >
             Change direction
           </DebugButton>
-          <DebugButton
-            handleClick={() => {
-              console.log('confirm placement');
-            }}
-            type="success"
-          >
+          <DebugButton handleClick={enter} type="success">
             Confirm placement
           </DebugButton>
         </div>

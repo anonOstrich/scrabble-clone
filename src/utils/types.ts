@@ -4,14 +4,14 @@ const ALLOWED_CHARACTERS = 'abcdefghijklmnopqrstuvwxyz'.split('');
 
 export type Character = keyof typeof PIECES_AND_NUMBERS;
 
-export type BoardSquareValue = Character | null;
+export type BoardSquareValue = BoardSquarePiece | null;
 
 export type BoardSquarePiece = {
-  value: BoardSquareValue;
+  value: Character;
   id: string;
 };
 
-export const isBoardSquareValue = (letterToSave: string | null): letterToSave is BoardSquareValue => {
+export const isBoardSquareCharacter = (letterToSave: string | null): letterToSave is Character => {
   if (letterToSave === null) return true;
   const char = letterToSave.toLowerCase();
   return ALLOWED_CHARACTERS.includes(char);

@@ -1,6 +1,6 @@
 import { writeBoardValue } from '../features/game/gameSlice';
 import { useAppDispatch, useAppSelector } from '../hooks/state-hooks';
-import { isBoardSquareValue } from '../utils/types';
+import { isBoardSquareCharacter } from '../utils/types';
 import { PlacementDirection } from './GameBoard';
 import ArrowRight from '../../assets/ArrowRight';
 
@@ -31,7 +31,8 @@ export default function GameSquare({
   setDirection,
   highlight = 'none',
 }: GameSquareProps) {
-  const character = useAppSelector((state) => state.game.board.boardArrayOneDimensional[index]);
+  const piece = useAppSelector((state) => state.game.board.boardArray[row][column]);
+  const character = piece?.value;
   const rackLetters = useAppSelector((state) => state.game.rack.pieces);
   const dispatch = useAppDispatch();
   const displayedCharacter = character ? character : '';
@@ -44,12 +45,12 @@ export default function GameSquare({
 
     const letterToSave = newLetter.length === 0 ? null : newLetter;
 
-    if (!isBoardSquareValue(letterToSave)) return;
+    if (!isBoardSquareCharacter(letterToSave)) return;
     if (highlight !== 'preview') return;
     dispatch(
       writeBoardValue({
         index: { dimensionality: 'one', index: index },
-        value: letterToSave,
+        valueChar: letterToSave,
       }),
     );
     if (writeIntoCell != null) {
@@ -61,7 +62,7 @@ export default function GameSquare({
     }
   }
 
-  let backgroundColor = '#d1d5db';
+  let backgroundColor = character == null ? '#d1d5db' : '#808080ff';
 
   if (!isDisabled) {
     switch (highlight) {

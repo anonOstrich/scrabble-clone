@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { useAppSelector } from '../hooks/state-hooks';
-import { PlacementDirection } from './GameBoard';
+import { Coords, PlacementDirection } from './GameBoard';
 import GameSquare from './GameSquare';
 import { BOARD_SIZE } from '../config/configs';
 
@@ -9,14 +9,24 @@ interface GameGridInterface {
   isDisabled: boolean;
   setWordHasStarted: (val: boolean) => void;
   setDirection: (newDirection: PlacementDirection) => void;
+  setWordStart: (val: Coords) => void;
+  setWordLength: (val: number) => void;
+  wordStart: Coords;
+  wordLength: number;
 }
 
-type Coords = [number, number];
-
-export default function GameGrid({ direction, isDisabled, setWordHasStarted, setDirection }: GameGridInterface) {
+export default function GameGrid({
+  direction,
+  isDisabled,
+  setWordHasStarted,
+  setDirection,
+  setWordStart,
+  setWordLength,
+  wordStart,
+  wordLength,
+}: GameGridInterface) {
   const boardState = useAppSelector((state) => state.game.board.boardArray);
-  const [wordStart, setWordStart] = useState<Coords>([-1, -1]);
-  const [wordLength, setWordLength] = useState<number>(0);
+
   // No need to be set up before first cell is hightlighted
   const focusEl = useRef<HTMLInputElement>(null);
 
@@ -47,7 +57,7 @@ export default function GameGrid({ direction, isDisabled, setWordHasStarted, set
     direction === 'horizontal' ? [startRow, startColumn + wordLength] : [startRow + wordLength, startColumn];
 
   function writeIntoCell() {
-    setWordLength((len) => len + 1);
+    setWordLength(wordLength + 1);
   }
 
   // const oneDimensionalBoard = boardState.flatMap((row) => row);
