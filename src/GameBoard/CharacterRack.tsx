@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import DebugButton from '../components/DebugButton';
-import { fillRack } from '../features/game/gameSlice';
+import { fillRack, replaceRackPieces } from '../features/game/gameSlice';
 import { useAppDispatch, useAppSelector } from '../hooks/state-hooks';
 import CharacterRackPiece from './CharacterRackPiece';
 import { BoardSquarePiece } from '../utils/types';
@@ -32,6 +32,14 @@ export default function CharacterRack() {
   function handleFinishPieceSwap() {
     setIsChoosingPiecesToSwap(false);
     console.log(`You wish to swap the following pieces: ${chosenPieces.map((p) => p.value).join(', ')}`);
+
+    // The action could already use the piece values
+    dispatch(
+      replaceRackPieces({
+        pieces: chosenPieces,
+      }),
+    );
+
     setChosenPieces([]);
   }
 

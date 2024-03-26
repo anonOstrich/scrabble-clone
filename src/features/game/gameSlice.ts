@@ -149,11 +149,48 @@ export const gameSlice = createSlice({
         state.sack.piecesByIds[id] = toAdd;
       });
     },
+    replaceRackPieces: (state, action: PayloadAction<{ pieces: BoardSquarePiece[] }>) => {
+      const { pieces } = action.payload;
+      const nofToReplace = pieces.length;
+      const piecesByIds = state.sack.piecesByIds;
+      if (Object.values(piecesByIds).length < pieces.length) {
+        throw new Error('Not enough pieces in sack');
+      }
+
+      // Remove from rack
+
+      const pieceIds = pieces.map((p) => p.id);
+      state.rack.pieces = state.rack.pieces.filter((p) => !pieceIds.includes(p.id));
+
+      // Add to rack
+      // SHould there be a global map to find a piece by id?
+      const newPieceIds = getRandomElements(Object.keys(piecesByIds), nofToReplace);
+      const newPieces = newPieceIds.map((id) => piecesByIds[id]);
+
+      state.rack.pieces.push(...newPieces);
+
+      // Remove from sack
+
+      newPieceIds.forEach((id) => delete piecesByIds[id]);
+
+      // Add old pieces to the sack!!
+      pieces.forEach((piece) => {
+        piecesByIds[piece.id] = piece;
+      });
+    },
   },
   selectors: {},
 });
 
-export const { reset, writeBoardValue, addToRack, addToSack, fillRack, removeFromRack, removeFromSack } =
-  gameSlice.actions;
+export const {
+  reset,
+  writeBoardValue,
+  addToRack,
+  addToSack,
+  fillRack,
+  removeFromRack,
+  removeFromSack,
+  replaceRackPieces,
+} = gameSlice.actions;
 
 export default gameSlice.reducer;
