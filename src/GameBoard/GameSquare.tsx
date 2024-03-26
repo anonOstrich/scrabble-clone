@@ -1,6 +1,8 @@
 import { writeBoardValue } from '../features/game/gameSlice';
 import { useAppDispatch, useAppSelector } from '../hooks/state-hooks';
 import { isBoardSquareValue } from '../utils/types';
+import { PlacementDirection } from './GameBoard';
+import ArrowRight from '../../assets/ArrowRight';
 
 type ChosenHighlight = 'preview' | 'chosen' | 'none';
 
@@ -14,6 +16,7 @@ interface GameSquareProps {
   writeIntoCell?: () => void;
   focusRef: React.RefObject<HTMLInputElement>;
   displayedArrow: 'horizontal' | 'vertical' | 'none';
+  setDirection?: (newDirection: PlacementDirection) => void;
 }
 
 export default function GameSquare({
@@ -25,6 +28,7 @@ export default function GameSquare({
   writeIntoCell,
   focusRef,
   displayedArrow,
+  setDirection,
   highlight = 'none',
 }: GameSquareProps) {
   const character = useAppSelector((state) => state.game.board.boardArrayOneDimensional[index]);
@@ -93,12 +97,26 @@ export default function GameSquare({
           console.log('HERE I AM');
           chooseAsStartingPosition(row, column);
         }}
+        onKeyDown={(e) => {
+          if (isDisabled || setDirection == null) return;
+          if (e.key === 'ArrowRight') {
+            setDirection('horizontal');
+          } else if (e.key === 'ArrowDown') {
+            setDirection('vertical');
+          }
+        }}
         ref={highlight === 'preview' ? focusRef : null}
       />
       {displayedArrow === 'none' ? null : displayedArrow === 'horizontal' ? (
-        <div className="absolute top-[50%] translate-y-[-50%] scale-150 left-[120%] text-black text-4xl z-10">→</div>
+        <div className="absolute top-[50%] left-[150%] translate-y-[-50%]  scale-150 text-black text-4xl z-10 w-[30px] transition-all">
+          <ArrowRight />
+        </div>
       ) : (
-        <div className="absolute left-[50%] top-[120%] text-black text-4xl z-10 translate-x-[-50%] scale-150">↓</div>
+        <div className="absolute left-[50%] top-[150%] text-black text-4xl z-10 translate-x-[-50%] scale-150 w-[30px] transition-all">
+          <div className="rotate-90 transition-all">
+            <ArrowRight />
+          </div>
+        </div>
       )}
     </div>
   );

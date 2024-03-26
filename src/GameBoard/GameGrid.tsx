@@ -8,11 +8,12 @@ interface GameGridInterface {
   direction: PlacementDirection;
   isDisabled: boolean;
   setWordHasStarted: (val: boolean) => void;
+  setDirection: (newDirection: PlacementDirection) => void;
 }
 
 type Coords = [number, number];
 
-export default function GameGrid({ direction, isDisabled, setWordHasStarted }: GameGridInterface) {
+export default function GameGrid({ direction, isDisabled, setWordHasStarted, setDirection }: GameGridInterface) {
   const boardState = useAppSelector((state) => state.game.board.boardArray);
   const [wordStart, setWordStart] = useState<Coords>([-1, -1]);
   const [wordLength, setWordLength] = useState<number>(0);
@@ -80,6 +81,7 @@ export default function GameGrid({ direction, isDisabled, setWordHasStarted }: G
               writeIntoCell={isHighlighted ? writeIntoCell : undefined}
               focusRef={focusEl}
               displayedArrow={wordLength === 0 ? (isHighlighted ? direction : 'none') : 'none'}
+              setDirection={isHighlighted ? setDirection : undefined}
             />
           );
         }),

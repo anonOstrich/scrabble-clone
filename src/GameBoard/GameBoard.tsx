@@ -25,7 +25,12 @@ export default function GameBoard() {
     >
       <h2 className="text-2xl">Game Board</h2>
       <div className="m-8 flex justify-center items-center">
-        <GameGrid isDisabled={!isPlacing} direction={placementDirection} setWordHasStarted={setWordHasStarted} />
+        <GameGrid
+          isDisabled={!isPlacing}
+          direction={placementDirection}
+          setWordHasStarted={setWordHasStarted}
+          setDirection={changePlacementDirection}
+        />
       </div>
 
       <WritingControls
