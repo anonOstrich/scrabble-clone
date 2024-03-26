@@ -77,7 +77,7 @@ export default function GameGrid({
   return (
     <div className="grid grid-cols-[repeat(15,1fr)] grid-rows-[repeat(15,1fr)] gap-1 bg-violet-700 border-[0.5rem] border-violet-700 w-[600px] h-[600px]">
       {twoDimensionalBoard.map((row, rowIndex) =>
-        row.map((column, columnIndex) => {
+        row.map((_, columnIndex) => {
           const isChosen = chosenCells.some(
             ([chosenRow, chosenColumn]) => chosenRow === rowIndex && chosenColumn === columnIndex,
           );

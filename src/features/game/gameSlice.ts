@@ -228,6 +228,7 @@ export const gameSlice = createSlice({
 
         return board[row][col];
       });
+      console.log(wordCells);
 
       // DO SOME CHECK ON IF IT'S A VALID WORD
 
